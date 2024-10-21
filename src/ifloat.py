@@ -21,7 +21,8 @@ class IFloat(object):
 	#
 	#		Initialise IFloat with given value.
 	#
-	def __init__(self,newValue = 0):
+	def __init__(self,newValue = 0):		
+
 		if IFloat.MINVALUE is None:															# Minimum value to feed in.
 			IFloat.MINVALUE = 0x7FFFFFFF*pow(2,-127)
 			IFloat.MAXVALUE = 0x7FFFFFFF*pow(2,127)
@@ -31,20 +32,21 @@ class IFloat(object):
 			self.isNegative = True
 
 		if newValue == int(newValue) and abs(newValue) < 0x80000000:						# Can it be represented as an integer ?
-			self.mantissa = abs(newValue)
+			self.mantissa = abs(int(newValue))
 			self.exponent = 0
 		else:
 			x = self.convert(abs(newValue)) 												# Convert to mantissa and exponent.
 			self.mantissa = x[0]
 			self.exponent = x[1]
 		self.verify()
-		self.checkRange(self.get(),newValue,5)
 	#
 	#		Check error between two values acceptable.
 	#
 	def checkRange(self,value,correct,percent):
 		if correct == 0:
-			isOkay = value < 0.00000001*percent
+			isOkay = value <= percent
+		elif value == 0:
+			isOkay = abs(correct) <= 0.00000001
 		else:
 			error = abs(correct) * percent / 100.0
 			isOkay = abs(correct-value) <= error
@@ -80,12 +82,31 @@ class IFloat(object):
 	#		Dump ifloat to stdout
 	#
 	def dump(self):
-		print("{3:16} as {0}${1} . 2^{2}".format("-" if self.isNegative else "+",self.mantissa,self.exponent,self.get()))
+		print(self.toString())
 	#
-	#		32 bit twos Complement
+	#		Convert to string
+	#
+	def toString(self):
+		return "IFLOAT: {3:16} as {0}${1:08x} . 2^{2}".format("-" if self.isNegative else "+",self.mantissa,self.exponent,self.get())
+	#
+	#		32 bit twos Complement (helper function)
 	#
 	def twosComplement(self,n):
 		return ((n ^ 0xFFFFFFFF)+1) & 0xFFFFFFFF
+	#
+	#		Normalise iFloat
+	#
+	def normalise(self):
+		if self.mantissa != 0: 																# Cannot normalise non zero values
+			while (self.mantissa & 0x40000000) == 0:
+				self.mantissa = self.mantissa << 1
+				self.exponent = self.exponent -1
+	#
+	#		-0 check
+	#
+	def checkMinusZero(self):
+		if self.mantissa == 0:
+			self.isNegative = False
 		
 IFloat.MAXVALUE = None 																		# Minimum/Maximum iFloat value
 IFloat.MINVALUE = None
@@ -113,22 +134,6 @@ class RandomIFloat(IFloat):
 				v = None
 		IFloat.__init__(self,v)
 
-# *******************************************************************************************
-#
-#									Random value source
-#
-# *******************************************************************************************
-
-class RandomSource(object):
-	def __init__(self):
-		random.seed(42)
-
-	def get(self):
-		return RandomIInt() if random.randint(0,1) == 0 else RandomIFloat()
-
 
 if __name__ == "__main__":
-	random.seed()
-	src = RandomSource()
-	for i in range(0,1000*1000):
-		src.get()
+	pass
