@@ -77,14 +77,16 @@ class IFloat(object):
 		mantissa = int(mantissa+0.5)
 		return [mantissa,exponent]
 	#
-	#
-	#
-	#
 	#		Dump ifloat to stdout
 	#
 	def dump(self):
 		print("{3:16} as {0}${1} . 2^{2}".format("-" if self.isNegative else "+",self.mantissa,self.exponent,self.get()))
-
+	#
+	#		32 bit twos Complement
+	#
+	def twosComplement(self,n):
+		return ((n ^ 0xFFFFFFFF)+1) & 0xFFFFFFFF
+		
 IFloat.MAXVALUE = None 																		# Minimum/Maximum iFloat value
 IFloat.MINVALUE = None
 
