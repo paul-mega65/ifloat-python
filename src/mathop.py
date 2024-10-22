@@ -54,14 +54,6 @@ class UnaryOperation(MathOperation):
 
 class BinaryOperation(MathOperation):
 	#
-	#		Calculate a op b, using integer or float method.
-	#
-	def calculate(self,a,b):
-		if a.exponent == 0 and b.exponent == 0:
-			return self.calculateInteger(a,b)
-		else:
-			return self.calculateFloat(a,b)
-	#
 	#		Do one test
 	#
 	def test(self,forceInteger = False,forcePositive = False):
@@ -75,12 +67,11 @@ class BinaryOperation(MathOperation):
 				a = self.getRandomFloat()
 				b = self.getRandomFloat()
 
-			isOk = self.validate(a,b)
-			isOk = True
+			if forcePositive:
+				a.isNegative = False
+				b.isNegative = False
 
-		if forcePositive:
-			a.isNegative = False
-			b.isNegative = False
+			isOk = self.validate(a,b)
 
 #		print("------------------	")
 #		a.dump()
@@ -89,7 +80,8 @@ class BinaryOperation(MathOperation):
 		isInteger = a.exponent == 0 and b.exponent == 0  									# Error allowed. If both values are integers error is zero.
 		correct = self.getResult(a,b)		
 		error = self.getErrorPercent(a,b)
+
 		calculated = self.calculate(a,b)  													# Calculate result. This normally changes a & b
 #		calculated.dump()
 		calculated.verify()   																# Is it a legal float
-		calculated.checkRange(calculated.get(),correct,0.0000001 if calculated.exponent == 0 else error)  	# Check the answer.
+		calculated.checkRange(calculated.get(),correct,error)  								# Check the answer.

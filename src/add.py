@@ -23,16 +23,9 @@ from mathop import *
 
 class AddOperation(BinaryOperation):
 	#
-	#		Use the same calculator for int & float ; there are different routines for same/different signs.
+	#		Add two numbers
 	#
-	def calculateInteger(self,a,b):
-		return self.addCalculator(a,b)
-	def calculateFloat(self,a,b):
-		return self.addCalculator(a,b)
-	#
-	#		Refolded together because we have two operations dependent on whether the signs match or not.
-	#
-	def addCalculator(self,a,b):
+	def calculate(self,a,b):
 #		print("Adding",a.get(),b.get())
 		if a.mantissa == 0:  																# Handle adding zero.
 			return b
