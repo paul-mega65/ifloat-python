@@ -1,8 +1,8 @@
 # *******************************************************************************************
 # *******************************************************************************************
 #
-#		Name : 		divide.py
-#		Purpose :	Division
+#		Name : 		intdiv.py
+#		Purpose :	IntegerDivision
 #		Date :		24th October 2024
 #		Author : 	Paul Robson (paul@robsons.org.uk)
 #
@@ -19,36 +19,33 @@ from mathop import *
 #
 # *******************************************************************************************
 
-class DivideOperation(BinaryOperation):
+class IntegerDivideOperation(BinaryOperation):
 	#
 	#		Divide two numbers
 	#
 	def calculate(self,a,b):
 #		print("Calculating",a.get(),b.get(),"should be",self.getResult(a,b))
-		a.normalise()
-		b.normalise()
 		newSign = a.isNegative != b.isNegative  											# Figure out if result is +ve/-ve
-		newExponent = a.exponent - b.exponent - 30  										# New exponent.
 		r = self.shiftDivide(a,b) 	 														# Divide the two.
 		if r.mantissa != 0:  																# Non zero result
 			r.isNegative = newSign  														# Set up new sign.
-			r.exponent = newExponent
 #		print("Result",r.get())
 		return r
 	#
-	#		Integer division with shift
+	#		Integer division
 	#
-	def shiftDivide(self,a,b):
-		r = IFloat(0) 																		# Result.
-		for i in range(0,31):																# Do 31 times
-			carry = self.divideCheckSubtract(a,b) 											# This is used in integer division also
+	def shiftDivide(self,r,b):
+		# r = S[x+2] b = S[x+1] a = S[x]
+		a = IFloat(0)
+		for i in range(0,32):																# Do 31 times
 			# this code is just a 64 bit shift of A:R left
-			r.mantissa = (r.mantissa << 1) | (1 if carry else 0) 							# Rotate into result.
-			a.mantissa = (a.mantissa << 1) & 0xFFFFFFFF  									# A mantissa left to.
+			r.mantissa = (r.mantissa << 1) 						 							# Shift R
+			a.mantissa = (a.mantissa << 1) & 0xFFFFFFFF  									# A mantissa left too.
 			if (r.mantissa & 0x100000000) != 0:	 											# carry to move.
 				r.mantissa = r.mantissa & 0xFFFFFFFF
 				a.mantissa = a.mantissa | 1
-
+			if self.divideCheckSubtract(a,b):  												# Can subtract ?
+				r.mantissa = r.mantissa | 1  												# Set LSB of R
 		return r
 	#
 	#		Do subtraction, return true if okay.
@@ -62,24 +59,25 @@ class DivideOperation(BinaryOperation):
 	#		Error percent allowed
 	#
 	def getErrorPercent(self,a,b):
-		return 0.000001
+		return 0
 	#
 	#		Calculate the actual result.
 	#
 	def getResult(self,a,b):
-		r = (a.get()+0.0) / b.get()
-		return 0 if abs(r) <1e-28 else r
+		r = abs(int(a.get())) / abs(int(b.get()))		
+		return -r if a.get()*b.get() < 0 else r
+
 	#
 	#		Validate the input data.
 	#
 	def validate(self,a,b):
-		if abs(a.get()) < 1e-10 or abs(b.get()) < 1e-10:
+		if b.get() == 0:
 			return False
-		result = self.getResult(a,b)
-		return result >= IFloat.MINVALUE and result < IFloat.MAXVALUE/8
+		return self.getResult(a,b)
 
 if __name__ == "__main__":
 	random.seed(42)
-	to = DivideOperation()	
+	to = IntegerDivideOperation()	
+#	print(to.calculate(IFloat(122),IFloat(2)).toString())
 	for i in range(0,1000*1000):
-		to.test(False,False)
+		to.test(True,False)

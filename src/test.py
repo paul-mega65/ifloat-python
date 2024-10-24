@@ -15,9 +15,13 @@ from mathop import *
 from add import *
 from multiply import *
 from divide import *
+from intdiv import *
 
 random.seed(42)
 binList = [ AddOperation(),DivideOperation(),MultiplyOperation() ]
+intOp = IntegerDivideOperation()
+
 for i in range(0,1000*10):
 	for b in binList:
 		b.test()
+	intOp.test(True)
