@@ -17,10 +17,11 @@ from multiply import *
 from divide import *
 from intdiv import *
 from integer import *
+from fractional import *
 
 random.seed(42)
 binList = [ AddOperation(),DivideOperation(),MultiplyOperation() ]
-unaList = [ IntegerOperation() ]
+unaList = [ IntegerOperation(),FractionalOperation() ]
 intOp = IntegerDivideOperation()
 
 for i in range(0,1000*10):
