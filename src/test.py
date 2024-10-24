@@ -16,12 +16,16 @@ from add import *
 from multiply import *
 from divide import *
 from intdiv import *
+from integer import *
 
 random.seed(42)
 binList = [ AddOperation(),DivideOperation(),MultiplyOperation() ]
+unaList = [ IntegerOperation() ]
 intOp = IntegerDivideOperation()
 
 for i in range(0,1000*10):
 	for b in binList:
 		b.test()
+	for u in unaList:
+		u.test()
 	intOp.test(True)

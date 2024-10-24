@@ -44,7 +44,33 @@ class MathOperation(object):
 # *******************************************************************************************
 
 class UnaryOperation(MathOperation):
-	pass
+	#
+	#		Do one test
+	#
+	def test(self,forceInteger = False,forcePositive = False):
+
+		isOk = False  																		# Get two valid values, both may be integers
+		while not isOk:
+			if forceInteger:
+				a = self.getRandomInteger()
+			else:
+				a = self.getRandomFloat()
+
+			if forcePositive:
+				a.isNegative = False
+			isOk = self.validate(a)
+
+#		print("------------------	")
+#		a.dump()
+#		b.dump()
+
+		correct = self.getResult(a)		
+		error = self.getErrorPercent(a)
+
+		calculated = self.calculate(a)  													# Calculate result. This normally changes a
+#		calculated.dump()
+		calculated.verify()   																# Is it a legal float
+		calculated.checkRange(calculated.get(),correct,error)  								# Check the answer.
 
 # *******************************************************************************************
 #
