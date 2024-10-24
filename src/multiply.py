@@ -3,7 +3,7 @@
 #
 #		Name : 		multiply.py
 #		Purpose :	Multiplication
-#		Date :		2wnc October 2024
+#		Date :		22nd October 2024
 #		Author : 	Paul Robson (paul@robsons.org.uk)
 #
 # *******************************************************************************************
@@ -84,6 +84,6 @@ class MultiplyOperation(BinaryOperation):
 if __name__ == "__main__":
 	random.seed(42)
 	to = MultiplyOperation()	
-#	print(to.calculateFloat(IFloat(12.7),IFloat(22.3)).toString())
+#	print(to.calculate(IFloat(12.7),IFloat(22.3)).toString())
 	for i in range(0,1000*1000):
 		to.test(False,False)
